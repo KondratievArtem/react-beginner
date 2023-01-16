@@ -3,47 +3,32 @@ import './index.scss';
 
 import questions from './questions';
 
-function Result({ correct, setLvl, setRender, setCorrect }) {
-	const restart = () => {
-		setLvl(0);
-		setCorrect(0);
-		setRender(true);
-	};
+function Result({ correct }) {
 	return (
 		<div className="result">
 			<img src="https://cdn-icons-png.flaticon.com/512/2278/2278992.png" />
 			<h2>
-				Вы отгадали {correct} ответа из {questions.length}
+				Правельних {correct} відповідей з {questions.length}
 			</h2>
-			<button onClick={() => restart()}>Попробовать снова</button>
+			<button>
+				<a href="/">Спробувати ще раз</a>
+			</button>
 		</div>
 	);
 }
 
-function Game({ lvl, setLvl, setRender, setCorrect, correct }) {
-	const progres = lvl * 33.333;
+function Game({ onClickVariant, question, lvl }) {
+	const progres = Math.floor((lvl / questions.length) * 100);
 
-	const clickVariant = (e) => {
-		setLvl(lvl + 1);
-		const ansver = e.target.innerText;
-
-		if (questions[lvl].variants.indexOf(ansver) === questions[lvl].correct) {
-			setCorrect(correct + 1);
-		}
-	};
-
-	if (lvl > questions.length - 1) {
-		return setRender(false);
-	}
 	return (
 		<>
 			<div className="progress">
-				<div style={{ width: progres + '%' }} className="progress__inner"></div>
+				<div style={{ width: `${progres}%` }} className="progress__inner"></div>
 			</div>
-			<h1>{questions[lvl].title}</h1>
-			{questions[lvl].variants.map((obj, index) => (
+			<h1>{question.title}</h1>
+			{question.variants.map((obj, index) => (
 				<ul key={index}>
-					<li onClick={(e) => clickVariant(e)}>{obj}</li>
+					<li onClick={() => onClickVariant(index)}>{obj}</li>
 				</ul>
 			))}
 		</>
@@ -51,18 +36,21 @@ function Game({ lvl, setLvl, setRender, setCorrect, correct }) {
 }
 
 function App() {
-	const [render, setRender] = React.useState(true);
 	const [lvl, setLvl] = React.useState(0);
 	const [correct, setCorrect] = React.useState(0);
+	const question = questions[lvl];
 
-	React.useEffect(() => {
-		console.log(lvl);
-	}, [lvl]);
+	const onClickVariant = (index) => {
+		setLvl(lvl + 1);
+
+		if (index === question.correct) {
+			setCorrect(correct + 1);
+		}
+	};
+
 	return (
 		<div className="App">
-			{render && <Game lvl={lvl} setLvl={setLvl} setRender={setRender} setCorrect={setCorrect} correct={correct} />}
-
-			{!render && <Result setRender={setRender} setLvl={setLvl} correct={correct} setCorrect={setCorrect} />}
+			{questions.length !== lvl ? <Game lvl={lvl} question={question} onClickVariant={onClickVariant} /> : <Result correct={correct} />}
 		</div>
 	);
 }
