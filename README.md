@@ -54,7 +54,7 @@
 
 ## Валідація форм
 
-![logo](./assets/img/register-form.png)
+![logo](./assets/img/react-form.png)
 
 **🌿 Гілка**: `register-form`
 
